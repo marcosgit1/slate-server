@@ -1,0 +1,38 @@
+name: Build Slate APK
+
+on:
+  push:
+    branches: [main]
+    paths: ['app/**', '.github/workflows/android.yml']
+  pull_request:
+    paths: ['app/**']
+  workflow_dispatch:
+
+jobs:
+  apk:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Restore release key (optional)
+        env:
+          KS_B64: ${{ secrets.SLATE_KEYSTORE_B64 }}
+        run: |
+          if [ -n "$KS_B64" ]; then
+            echo "$KS_B64" | base64 -d > "$RUNNER_TEMP/slate.keystore"
+            echo "SLATE_KEYSTORE=$RUNNER_TEMP/slate.keystore" >> "$GITHUB_ENV"
+          fi
+      - name: Build
+        env:
+          SLATE_KS_PASS: ${{ secrets.SLATE_KS_PASS }}
+          SLATE_KS_ALIAS: ${{ secrets.SLATE_KS_ALIAS }}
+        run: |
+          cd app
+          ./build.sh "$GITHUB_WORKSPACE/Slate.apk"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Slate-apk
+          path: Slate.apk

@@ -1,0 +1,9 @@
+build/
+*.apk
+*.keystore
+*.jks
+local.properties
+.DS_Store
+node_modules/
+.env
+server/data/

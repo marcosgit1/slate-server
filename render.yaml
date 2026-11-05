@@ -1,0 +1,31 @@
+# Deploys the Slate backend on Render (render.com) straight from this repo.
+# In Render: New -> Blueprint -> pick this repo -> Apply.
+services:
+  - type: web
+    name: slate-server
+    runtime: node
+    plan: free
+    region: frankfurt
+    rootDir: server
+    buildCommand: npm install
+    startCommand: node index.js
+    healthCheckPath: /health
+    autoDeploy: true
+    envVars:
+      - key: NODE_VERSION
+        value: "20"
+      # Random admin key used to promote an account to moderator (see server/README.md).
+      - key: ADMIN_KEY
+        generateValue: true
+      # Set this to a public URL if Render's proxy headers are not enough:
+      # - key: PUBLIC_URL
+      #   value: https://slate-server.onrender.com
+      #
+      # Free instances have no persistent disk: accounts/messages survive restarts
+      # but are lost on redeploy. On a paid plan attach a disk and set DATA_DIR:
+      # - key: DATA_DIR
+      #   value: /var/data
+    # disk:
+    #   name: slate-data
+    #   mountPath: /var/data
+    #   sizeGB: 1
