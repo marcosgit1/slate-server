@@ -14,7 +14,6 @@ const MEDIA_DIR = path.join(DATA_DIR, 'media');
 const STATE_FILE = path.join(DATA_DIR, 'state.json');
 const MAX_BODY = 12 * 1024 * 1024; // 12 MB (base64 media)
 const ONLINE_MS = 50000;           // a client is "online" for 50s after its last sync
-const MOD_RE = /^(1|mod([1-9]|1[0-9]|20))$/i;
 
 fs.mkdirSync(MEDIA_DIR, { recursive: true });
 
@@ -54,7 +53,6 @@ function save() {
 
 const now = () => Date.now();
 const key = (u) => String(u || '').trim().toLowerCase();
-const isModName = (u) => MOD_RE.test(String(u || '').trim());
 const tokenOf = () => crypto.randomBytes(24).toString('hex');
 
 function hashPassword(pass, salt) {
@@ -296,7 +294,7 @@ function register(req, body) {
     created: now(),
     lastSeen: now(),
     online: true,
-    mod: isModName(username),
+    mod: false,
     banned: false,
     bannedUntil: 0,
     banReason: '',
